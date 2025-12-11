@@ -1,0 +1,5 @@
+{
+  "name": "op-dbus-v2 Dashboard",
+  "description": "A robust management UI for the op-dbus-v2 MCP server, featuring advanced DBus introspection visualization, service management, and AI-assisted system analysis.",
+  "requestFramePermissions": []
+}
