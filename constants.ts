@@ -31,6 +31,26 @@ export const EXECUTION_PROFILES: ExecutionProfile[] = [
         timeoutMs: 30000,
         maxRetries: 0,
         icon: '🎨'
+    },
+    {
+        id: 'profile-rust',
+        name: 'Rust Pro',
+        description: 'Expertise in Rust memory safety, concurrency, and zero-cost abstractions',
+        modelPreferences: ['claude-3-opus', 'gemini-2.5-flash'],
+        temperature: 0.1,
+        timeoutMs: 45000,
+        maxRetries: 2,
+        icon: '🦀'
+    },
+    {
+        id: 'profile-architect',
+        name: 'Backend Architect',
+        description: 'Scalable system design, database topology, and cloud patterns',
+        modelPreferences: ['gpt-4-turbo', 'claude-3-opus'],
+        temperature: 0.4,
+        timeoutMs: 60000,
+        maxRetries: 1,
+        icon: '🏗️'
     }
 ];
 
@@ -89,8 +109,12 @@ export const MOCK_AGENTS: MCPAgent[] = [
     // Developer
     { id: 'agent-git', name: 'Git Operations', url: 'http://localhost:8083', status: 'connected', capabilities: ['git_clone', 'git_commit', 'git_diff'], pluginId: 'plugin-dev', executionProfileId: 'profile-realtime' },
     { id: 'agent-review', name: 'Code Reviewer', url: 'http://localhost:8084', status: 'connected', capabilities: ['analyze_pr', 'suggest_refactor'], pluginId: 'plugin-dev', executionProfileId: 'profile-reasoning' },
+    { id: 'agent-rust', name: 'Rust Compiler Agent', url: 'http://localhost:8095', status: 'connected', capabilities: ['cargo_check', 'borrow_analysis', 'expand_macros'], pluginId: 'plugin-dev', executionProfileId: 'profile-rust' },
     { id: 'agent-qa', name: 'QA Automation', url: 'http://localhost:8086', status: 'disconnected', capabilities: ['run_selenium', 'api_test'], pluginId: 'plugin-dev', executionProfileId: 'profile-reasoning' },
     
+    // Architecture
+    { id: 'agent-arch', name: 'System Architect', url: 'http://localhost:8096', status: 'connected', capabilities: ['design_review', 'capacity_planning', 'topology_gen'], pluginId: 'plugin-ops', executionProfileId: 'profile-architect' },
+
     // Data
     { id: 'agent-postgres', name: 'Postgres DBA', url: 'http://localhost:5432/mcp', status: 'disconnected', capabilities: ['query_db', 'analyze_index'], pluginId: 'plugin-data', executionProfileId: 'profile-realtime' },
     { id: 'agent-bi', name: 'BI Analyst', url: 'http://localhost:8087', status: 'connected', capabilities: ['gen_report', 'forecast_trend'], pluginId: 'plugin-data', executionProfileId: 'profile-reasoning' },
@@ -116,7 +140,7 @@ export const BUILTIN_SKILLS: Skill[] = [
     { id: 'skill-sys-4', name: 'System Health Check', category: 'system', description: 'Reports CPU, RAM, and Disk usage.', parameters: { detailLevel: 'low|high' }, pluginId: 'plugin-core', executionProfileId: 'profile-realtime' },
     { id: 'skill-sys-5', name: 'Disk Cleaner', category: 'system', description: 'Identifies and cleans temp files.', parameters: { path: 'string' }, pluginId: 'plugin-core', executionProfileId: 'profile-realtime' },
     
-    // --- Plugin: DevTools (7) ---
+    // --- Plugin: DevTools (9) ---
     { id: 'skill-code-1', name: 'Code Review', category: 'coding', description: 'Reviews code for security flaws.', parameters: { code: 'string' }, pluginId: 'plugin-dev', executionProfileId: 'profile-reasoning' },
     { id: 'skill-code-2', name: 'Unit Test Gen', category: 'coding', description: 'Generates test suites.', parameters: { code: 'string' }, pluginId: 'plugin-dev', executionProfileId: 'profile-reasoning' },
     { id: 'skill-code-3', name: 'Regex Builder', category: 'coding', description: 'Creates regex from description.', parameters: { desc: 'string' }, pluginId: 'plugin-dev', executionProfileId: 'profile-reasoning' },
@@ -124,6 +148,8 @@ export const BUILTIN_SKILLS: Skill[] = [
     { id: 'skill-code-5', name: 'API Mocker', category: 'coding', description: 'Generates mock JSON responses.', parameters: { schema: 'string' }, pluginId: 'plugin-dev', executionProfileId: 'profile-creative' },
     { id: 'skill-code-6', name: 'Docstring Gen', category: 'coding', description: 'Adds documentation to functions.', parameters: { code: 'string' }, pluginId: 'plugin-dev', executionProfileId: 'profile-reasoning' },
     { id: 'skill-code-7', name: 'Git Blame Analysis', category: 'coding', description: 'Analyzes commit history context.', parameters: { file: 'string' }, pluginId: 'plugin-dev', executionProfileId: 'profile-reasoning' },
+    { id: 'skill-rust-1', name: 'Unsafe Code Audit', category: 'coding', description: 'Scans Rust code for unsafe blocks.', parameters: { path: 'string' }, pluginId: 'plugin-dev', executionProfileId: 'profile-rust' },
+    { id: 'skill-rust-2', name: 'Struct Layout Opt', category: 'coding', description: 'Optimizes Rust struct memory padding.', parameters: { structDef: 'string' }, pluginId: 'plugin-dev', executionProfileId: 'profile-rust' },
     
     // --- Plugin: Data (7) ---
     { id: 'skill-data-1', name: 'Text to SQL', category: 'data', description: 'Converts NLP to SQL.', parameters: { query: 'string' }, pluginId: 'plugin-data', executionProfileId: 'profile-reasoning' },
@@ -142,12 +168,14 @@ export const BUILTIN_SKILLS: Skill[] = [
     { id: 'skill-res-5', name: 'Keyword Extractor', category: 'analysis', description: 'Extracts key topics.', parameters: { text: 'string' }, pluginId: 'plugin-research', executionProfileId: 'profile-realtime' },
     { id: 'skill-res-6', name: 'Translation', category: 'content', description: 'Translates text.', parameters: { text: 'string', targetLang: 'string' }, pluginId: 'plugin-research', executionProfileId: 'profile-realtime' },
 
-    // --- Plugin: Ops (5) ---
+    // --- Plugin: Ops (7) ---
     { id: 'skill-ops-1', name: 'Dockerfile Gen', category: 'devops', description: 'Creates Dockerfiles.', parameters: { stack: 'string' }, pluginId: 'plugin-ops', executionProfileId: 'profile-reasoning' },
     { id: 'skill-ops-2', name: 'K8s Manifest Gen', category: 'devops', description: 'Generates YAML manifests.', parameters: { service: 'string' }, pluginId: 'plugin-ops', executionProfileId: 'profile-reasoning' },
     { id: 'skill-ops-3', name: 'Log Rotator', category: 'devops', description: 'Configures log rotation.', parameters: { path: 'string' }, pluginId: 'plugin-ops', executionProfileId: 'profile-realtime' },
     { id: 'skill-ops-4', name: 'CI/CD Pipeline Gen', category: 'devops', description: 'Generates GitHub Actions.', parameters: { tech: 'string' }, pluginId: 'plugin-ops', executionProfileId: 'profile-reasoning' },
     { id: 'skill-ops-5', name: 'Terraform Plan', category: 'devops', description: 'Generates TF config.', parameters: { resources: 'string' }, pluginId: 'plugin-ops', executionProfileId: 'profile-reasoning' },
+    { id: 'skill-arch-1', name: 'System Topology Gen', category: 'devops', description: 'Generates PlantUML for architecture.', parameters: { requirements: 'string' }, pluginId: 'plugin-ops', executionProfileId: 'profile-architect' },
+    { id: 'skill-arch-2', name: 'Cost Estimator', category: 'business', description: 'Estimates AWS/GCP cloud costs.', parameters: { resources: 'string' }, pluginId: 'plugin-ops', executionProfileId: 'profile-architect' },
 
     // --- Plugin: Security (5) ---
     { id: 'skill-sec-1', name: 'Password Auditor', category: 'security', description: 'Checks password strength.', parameters: { policy: 'string' }, pluginId: 'plugin-sec', executionProfileId: 'profile-reasoning' },

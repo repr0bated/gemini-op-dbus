@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MCPAgent, ExecutionProfile, Plugin } from '../types';
-import { Network, Plus, Trash2, RefreshCw, Link, Layers, Loader2 } from 'lucide-react';
+import { Network, Plus, Trash2, RefreshCw, Link, Layers, Loader2, Zap } from 'lucide-react';
 import { api } from '../services/api';
 
 export const MCPAgents: React.FC = () => {
@@ -93,43 +93,75 @@ export const MCPAgents: React.FC = () => {
                     const profile = getProfile(agent.executionProfileId);
                     
                     return (
-                        <div key={agent.id} className="bg-gray-900 border border-gray-800 rounded-xl p-6 flex items-center justify-between group hover:border-gray-700 transition-all">
-                            <div className="flex items-center gap-4">
-                                <div className={`p-3 rounded-lg ${agent.status === 'connected' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
-                                    <Network size={24} />
+                        <div key={agent.id} className="bg-gray-900 border border-gray-800 rounded-xl p-5 group hover:border-gray-700 transition-all relative overflow-hidden">
+                            {/* Background Decoration */}
+                            {profile && (
+                                <div className="absolute -top-6 -right-6 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none select-none">
+                                    <span className="text-[120px] grayscale">{profile.icon}</span>
                                 </div>
-                                <div>
-                                    <h4 className="font-bold text-gray-200 flex items-center gap-2">
-                                        {agent.name}
-                                        <span className="text-[10px] bg-gray-800 px-2 py-0.5 rounded text-gray-400 font-normal border border-gray-700 flex items-center gap-1">
-                                            <Layers size={10} /> {getPluginName(agent.pluginId)}
-                                        </span>
-                                    </h4>
-                                    <div className="flex items-center gap-3 mt-1">
-                                        <a href={agent.url} className="text-sm text-gray-500 hover:text-primary-400 transition-colors">{agent.url}</a>
-                                        {profile && (
-                                            <span className="text-xs text-blue-400 flex items-center gap-1 bg-blue-900/10 px-2 py-0.5 rounded border border-blue-900/30">
-                                                {profile.icon} {profile.name}
-                                            </span>
-                                        )}
+                            )}
+
+                            <div className="flex items-start justify-between relative z-10">
+                                <div className="flex gap-5 w-full">
+                                    {/* Icon Box */}
+                                    <div className={`w-14 h-14 rounded-xl flex-shrink-0 flex items-center justify-center text-2xl shadow-inner ${agent.status === 'connected' ? 'bg-gray-800 text-gray-200' : 'bg-red-900/10 text-red-400'}`}>
+                                        {profile ? profile.icon : <Network size={24} />}
                                     </div>
-                                    <div className="flex gap-2 mt-2">
-                                        {agent.capabilities.map(cap => (
-                                            <span key={cap} className="text-xs bg-gray-800 text-gray-400 px-2 py-0.5 rounded border border-gray-700">{cap}</span>
-                                        ))}
+
+                                    <div className="space-y-1 flex-1">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <h4 className="text-xl font-bold text-gray-100">{agent.name}</h4>
+                                                <div className={`flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full border ${agent.status === 'connected' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
+                                                    <div className={`w-1.5 h-1.5 rounded-full ${agent.status === 'connected' ? 'bg-green-400' : 'bg-red-400'}`}></div>
+                                                    {agent.status === 'connected' ? 'Online' : 'Offline'}
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <a href={agent.url} className="text-xs font-mono text-gray-600 hover:text-primary-400 transition-colors flex items-center gap-1 bg-black/20 px-2 py-1 rounded">
+                                                    <Link size={12} />
+                                                    {agent.url}
+                                                </a>
+                                                <button 
+                                                    onClick={() => removeAgent(agent.id)}
+                                                    className="p-1.5 text-gray-600 hover:text-red-400 hover:bg-red-900/20 rounded transition-colors"
+                                                    title="Remove Agent"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* Profile & Plugin Info Line */}
+                                        <div className="flex items-center gap-3 text-sm py-1">
+                                            {profile ? (
+                                                <div className="flex items-center gap-2 text-blue-300 font-medium bg-blue-500/10 px-2.5 py-1 rounded-md border border-blue-500/20 shadow-sm">
+                                                    <span className="text-lg leading-none">{profile.icon}</span>
+                                                    <span>{profile.name} Profile</span>
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center gap-2 text-gray-500 italic bg-gray-800/30 px-2 py-1 rounded-md">
+                                                    <Zap size={14} />
+                                                    <span>Standard Profile</span>
+                                                </div>
+                                            )}
+                                            <span className="text-gray-800">|</span>
+                                            <div className="flex items-center gap-1.5 text-gray-400 bg-gray-800/30 px-2 py-1 rounded-md border border-transparent hover:border-gray-700 transition-colors">
+                                                <Layers size={14} />
+                                                <span>{getPluginName(agent.pluginId)}</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Capabilities */}
+                                        <div className="flex flex-wrap gap-2 mt-3 pt-2 border-t border-gray-800/50">
+                                            {agent.capabilities.map(cap => (
+                                                <span key={cap} className="text-[11px] bg-gray-950 text-gray-500 px-2 py-0.5 rounded border border-gray-800 font-mono">
+                                                    {cap}
+                                                </span>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <span className={`text-xs font-mono uppercase tracking-wider ${agent.status === 'connected' ? 'text-green-500' : 'text-red-500'}`}>
-                                    {agent.status}
-                                </span>
-                                <button 
-                                    onClick={() => removeAgent(agent.id)}
-                                    className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-900/20 rounded-lg transition-colors"
-                                >
-                                    <Trash2 size={18} />
-                                </button>
                             </div>
                         </div>
                     );
